@@ -326,7 +326,10 @@ public final class GeoIP2 {
                 value = try parseString(data: valueData)
                 current = valuePtr.pointee.next
             case UInt32(MMDB_DATA_TYPE_DOUBLE):
-                value = valueData.double_value
+                // Swap byte order to fix endianness issue
+                let bits = valueData.double_value.bitPattern
+                let swapped = bits.byteSwapped
+                value = Double(bitPattern: swapped)
                 current = valuePtr.pointee.next
             case UInt32(MMDB_DATA_TYPE_UINT16):
                 value = valueData.uint16
